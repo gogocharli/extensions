@@ -1,5 +1,6 @@
 import { CurrencyFormat } from '@srcTypes';
 import { utils } from 'ynab';
+import { isNumberLike } from './validation';
 
 export function formatToReadablePrice({
   amount,
@@ -31,21 +32,22 @@ export function formatToReadablePrice({
   }
 }
 
-export function formatToYnabPrice(price: string | number) {
-  return Number(price) * 1000;
+/**
+ * Format a number or a valid string input into a currency amount in milliunits.
+ */
+export function formatToYnabAmount(amount: string | number): number {
+  if (typeof amount === 'number' || isNumberLike(amount)) {
+    return Number(amount) * 1000;
+  } else {
+    throw new Error(`Amount (${amount}) cannot be converted to a number`);
+  }
 }
 
-export function getCurrentMonth() {
-  return new Intl.DateTimeFormat('en-us', { month: 'long' }).format(new Date(utils.getCurrentDateInISOFormat()));
-}
-
-const IS_NUMBER_REGEX = /^[+-]?\d+(\.\d+)?$/g;
-export function isNumber(v: string) {
-  if (Number.isNaN(Number(v))) return false;
-
-  if (!IS_NUMBER_REGEX.test(v)) return false;
-
-  return true;
+/**
+ * Get the current month according to the UTC time zone.
+ */
+export function getCurrentMonth(): string {
+  return new Intl.DateTimeFormat('en-us', { month: 'long', timeZone: 'UTC' }).format(new Date());
 }
 
 function formatCurrencyPlacement(amount: string, symbol: string, symbol_first: boolean, shouldPrefixSymbol: boolean) {

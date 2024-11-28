@@ -1,4 +1,4 @@
-import { formatToYnabPrice, isNumber } from '@lib/utils';
+import { formatToYnabAmount, isNumberLike } from '@lib/utils';
 import { ActionPanel, Action, Form, Icon, Color, showToast, Toast } from '@raycast/api';
 import { createTransaction } from '@lib/api';
 import { useAccounts } from '@hooks/useAccounts';
@@ -54,7 +54,12 @@ export function TransactionCreationForm({ categoryId, accountId }: { categoryId?
         title="Edit Transaction"
         text="Change one or more of the following fields to update the transaction."
       />
-      <Form.DatePicker id="date" title="Date of Transaction" defaultValue={new Date()} />
+      <Form.DatePicker
+        id="date"
+        title="Date of Transaction"
+        defaultValue={new Date()}
+        type={Form.DatePicker.Type.Date}
+      />
       <Form.TextField id="amount" title={`Amount ${currencySymbol ? `(${currencySymbol})` : ''}`} defaultValue="0" />
       <Form.TextField id="payee_name" title="Payee Name" defaultValue="" placeholder="Enter the counterparty" />
       <Form.Dropdown id="account_id" title="Account" defaultValue={accountId}>
@@ -132,7 +137,7 @@ function isValidFormSubmission(values: Values) {
     }
   });
 
-  if (!isNumber(values.amount)) {
+  if (!isNumberLike(values.amount)) {
     isValid = false;
     showToast({
       style: Toast.Style.Failure,
@@ -149,7 +154,7 @@ function createTransactionData(values: Values) {
     ...values,
     date: values.date.toISOString(),
     flag_color: values.flag_color || null,
-    amount: formatToYnabPrice(values.amount),
+    amount: formatToYnabAmount(values.amount),
     memo: values.memo || null,
     approved: true,
     cleared: values.cleared ? SaveTransaction.ClearedEnum.Cleared : SaveTransaction.ClearedEnum.Uncleared,

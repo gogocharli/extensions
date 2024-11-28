@@ -1,10 +1,10 @@
+import { useState } from 'react';
 import { OpenInYnabAction } from '@components/actions';
 import { TransactionCreationForm } from '@components/transactions/transactionCreationForm';
 import { useLocalStorage } from '@hooks/useLocalStorage';
-import { formatToReadablePrice } from '@lib/utils';
+import { assessGoalShape, displayGoalType, formatGoalType, formatToReadablePrice, displayGoalColor } from '@lib/utils';
 import { Action, ActionPanel, Icon, List } from '@raycast/api';
-import { CurrencyFormat, Category, CategoryGroupWithCategories, BudgetDetailSummary } from '@srcTypes';
-import { useState } from 'react';
+import type { CurrencyFormat, Category, CategoryGroupWithCategories, BudgetDetailSummary } from '@srcTypes';
 import { BudgetDetails } from './budgetDetails';
 import { CategoryDetails } from './categoryDetails';
 import { CategoryEditForm } from './categoryEditForm';
@@ -24,23 +24,28 @@ export function CategoryGroupSection({
       {categoryGroups
         ?.filter((group) => group.name !== 'Internal Master Category')
         ?.map((group) => (
-          <List.Section
-            key={group.id}
-            id={group.id}
-            title={group.name}
-            subtitle={`${group.categories.length} Categories`}
-          >
-            {group.categories.map((category) => (
-              // TODO create unique icons for different goal types
+          <List.Section key={group.id} title={group.name} subtitle={`${group.categories.length} Categories`}>
+            {group.categories.filter((category) => !category.hidden).map((category) => (
               <List.Item
                 key={category.id}
                 id={category.id}
                 title={category.name}
-                accessoryTitle={
-                  showProgress
-                    ? renderProgressTitle(category)
-                    : formatToReadablePrice({ amount: category.balance, currency: activeBudgetCurrency })
-                }
+                accessories={[
+                  category.goal_type && !showProgress
+                    ? {
+                      icon: displayGoalType(category),
+                      tooltip: formatGoalType(category, activeBudgetCurrency),
+                    }
+                    : {},
+                  {
+                    tag: {
+                      value: showProgress
+                        ? renderProgressTitle(category)
+                        : formatToReadablePrice({ amount: category.balance, currency: activeBudgetCurrency }),
+                      color: displayGoalColor(assessGoalShape(category)),
+                    },
+                  },
+                ]}
                 actions={
                   <ActionPanel>
                     <ActionPanel.Section title="Inspect Budget">
