@@ -5,6 +5,7 @@ import type {
   Category as ynabCategory,
   CategoryGroupWithCategories as ynabCategoryGroupWithCategories,
   BudgetDetail as ynabBudgetDetail,
+  SaveSubTransaction,
 } from 'ynab';
 
 export interface Preferences {
@@ -35,6 +36,10 @@ export type FlagColor = 'red' | 'orange' | 'yellow' | 'green' | 'blue' | 'purple
 
 export type CurrencyFormat = ynabCurrencyFormat | null | undefined;
 
+export interface SaveSubTransactionWithReadableAmounts extends Omit<SaveSubTransaction, 'amount'> {
+  amount: string;
+}
+
 export interface BudgetSummary {
   id: string;
   name: string;
@@ -64,6 +69,7 @@ export interface ViewState {
   sort: SortNames | null;
   collection: TransactionDetail[] | TransactionDetailMap;
   initialCollection: TransactionDetail[];
+  isShowingDetails: boolean;
 }
 
 export type ViewAction =
@@ -74,7 +80,8 @@ export type ViewAction =
     }
   | { type: 'search'; query: string }
   | { type: 'group'; groupBy: GroupNames }
-  | { type: 'sort'; sortBy: SortNames };
+  | { type: 'sort'; sortBy: SortNames }
+  | { type: 'toggleDetails' };
 
 export type TransactionState = Omit<ViewState, 'collection' | 'initialCollection'> & {
   timeline: Period | undefined;

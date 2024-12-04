@@ -5,6 +5,7 @@ import dayjs from 'dayjs';
 
 import quarterOfYear from 'dayjs/plugin/quarterOfYear';
 import { Preferences, Period, BudgetSummary, TransactionDetail } from '@srcTypes';
+import { SaveTransaction } from 'ynab';
 dayjs.extend(quarterOfYear);
 
 const { apiToken } = getPreferenceValues<Preferences>();
@@ -144,7 +145,7 @@ export async function fetchTransactions(selectedBudgetId: string, period: Period
   }
 }
 
-export async function updateTransaction(selectedBudgetId: string, transactionId: string, data: TransactionDetail) {
+export async function updateTransaction(selectedBudgetId: string, transactionId: string, data: SaveTransaction) {
   try {
     const updateResponse = await client.transactions.updateTransaction(selectedBudgetId || 'last-used', transactionId, {
       transaction: data,
@@ -166,7 +167,7 @@ export async function updateTransaction(selectedBudgetId: string, transactionId:
   }
 }
 
-type TransactionCreation = Omit<TransactionDetail, 'account_name' | 'id' | 'deleted' | 'subtransactions'>;
+type TransactionCreation = SaveTransaction;
 
 export async function createTransaction(selectedBudgetId: string, transactionData: TransactionCreation) {
   try {
