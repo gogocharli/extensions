@@ -5,7 +5,11 @@ import type {
   Category as ynabCategory,
   CategoryGroupWithCategories as ynabCategoryGroupWithCategories,
   BudgetDetail as ynabBudgetDetail,
+  SaveSubTransaction,
+  SaveTransactionWithOptionalFields,
 } from 'ynab';
+
+export type { NewTransaction } from 'ynab';
 
 export interface Preferences {
   apiToken: string;
@@ -24,7 +28,7 @@ export type GroupTypes = 'category' | 'payee' | 'account';
 export type GroupNames = `${GroupTypes}_name`;
 
 export type FilterTypes = 'category' | 'account';
-export type FilterNames = `${FilterTypes}_name` | 'amount';
+export type FilterNames = `${FilterTypes}_name` | 'amount' | 'unreviewed';
 
 export type SortTypes = 'amount' | 'date';
 export type sortOrder = 'asc' | 'desc';
@@ -34,6 +38,11 @@ export type Period = 'day' | 'week' | 'month' | 'quarter' | 'year';
 export type FlagColor = 'red' | 'orange' | 'yellow' | 'green' | 'blue' | 'purple';
 
 export type CurrencyFormat = ynabCurrencyFormat | null | undefined;
+
+export type SaveTransaction = SaveTransactionWithOptionalFields;
+export interface SaveSubTransactionWithReadableAmounts extends Omit<SaveSubTransaction, 'amount'> {
+  amount: string;
+}
 
 export interface BudgetSummary {
   id: string;
@@ -64,6 +73,7 @@ export interface ViewState {
   sort: SortNames | null;
   collection: TransactionDetail[] | TransactionDetailMap;
   initialCollection: TransactionDetail[];
+  isShowingDetails: boolean;
 }
 
 export type ViewAction =
@@ -74,7 +84,8 @@ export type ViewAction =
     }
   | { type: 'search'; query: string }
   | { type: 'group'; groupBy: GroupNames }
-  | { type: 'sort'; sortBy: SortNames };
+  | { type: 'sort'; sortBy: SortNames }
+  | { type: 'toggleDetails' };
 
 export type TransactionState = Omit<ViewState, 'collection' | 'initialCollection'> & {
   timeline: Period | undefined;

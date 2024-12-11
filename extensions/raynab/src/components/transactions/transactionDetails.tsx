@@ -6,11 +6,11 @@ import localizedFormat from 'dayjs/plugin/localizedFormat';
 dayjs.extend(localizedFormat);
 
 import { easyGetColorFromId, formatToReadablePrice, getFlagColor } from '@lib/utils';
-import { useLocalStorage } from '@hooks/useLocalStorage';
 import { OpenInYnabAction } from '@components/actions';
+import { useLocalStorage } from '@raycast/utils';
 
 export function TransactionDetails({ transaction }: { transaction: TransactionDetail }) {
-  const [activeBudgetCurrency] = useLocalStorage<CurrencyFormat | null>('activeBudgetCurrency', null);
+  const { value: activeBudgetCurrency } = useLocalStorage<CurrencyFormat | null>('activeBudgetCurrency', null);
 
   const hasSubtransactions = transaction.subtransactions.length > 0;
 
@@ -53,7 +53,13 @@ export function TransactionDetails({ transaction }: { transaction: TransactionDe
                   <Detail.Metadata.TagList.Item
                     key={transaction.id}
                     text={transaction.category_name ?? 'Not Specified'}
-                    color={transaction.category_name ? easyGetColorFromId(idx) : Color.Red}
+                    color={
+                      transaction.category_name
+                        ? transaction.category_name === 'Uncategorized'
+                          ? null
+                          : easyGetColorFromId(idx)
+                        : Color.Red
+                    }
                   />
                 ))
             ) : (
