@@ -1,11 +1,8 @@
 import { getPreferenceValues, showToast, Toast } from '@raycast/api';
 import * as ynab from 'ynab';
 import { displayError, isYnabError } from './errors';
-import dayjs from 'dayjs';
-
-import quarterOfYear from 'dayjs/plugin/quarterOfYear';
-import { Preferences, Period, BudgetSummary, TransactionDetail } from '@srcTypes';
-dayjs.extend(quarterOfYear);
+import type { Period, BudgetSummary, SaveTransaction, NewTransaction, Preferences } from '@srcTypes';
+import { time } from './utils';
 
 const { apiToken } = getPreferenceValues<Preferences>();
 const client = new ynab.API(apiToken);
@@ -121,7 +118,9 @@ export async function fetchTransactions(selectedBudgetId: string, period: Period
   try {
     const transactionsResponse = await client.transactions.getTransactions(
       selectedBudgetId,
-      dayjs().subtract(1, period).toISOString() // Show one month before by default
+      time()
+        .subtract(1, period as time.ManipulateType)
+        .toISOString()
     );
     const transactions = transactionsResponse.data.transactions;
 
@@ -144,7 +143,7 @@ export async function fetchTransactions(selectedBudgetId: string, period: Period
   }
 }
 
-export async function updateTransaction(selectedBudgetId: string, transactionId: string, data: TransactionDetail) {
+export async function updateTransaction(selectedBudgetId: string, transactionId: string, data: SaveTransaction) {
   try {
     const updateResponse = await client.transactions.updateTransaction(selectedBudgetId || 'last-used', transactionId, {
       transaction: data,
@@ -166,9 +165,7 @@ export async function updateTransaction(selectedBudgetId: string, transactionId:
   }
 }
 
-type TransactionCreation = Omit<TransactionDetail, 'account_name' | 'id' | 'deleted' | 'subtransactions'>;
-
-export async function createTransaction(selectedBudgetId: string, transactionData: TransactionCreation) {
+export async function createTransaction(selectedBudgetId: string, transactionData: NewTransaction) {
   try {
     const transactionCreationResponse = await client.transactions.createTransaction(selectedBudgetId || 'last-used', {
       transaction: transactionData,
