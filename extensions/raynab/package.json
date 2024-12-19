@@ -6,6 +6,10 @@
   "icon": "command-icon.png",
   "author": "CodetaroMiura",
   "license": "MIT",
+  "categories": [
+    "Finance",
+    "Productivity"
+  ],
   "commands": [
     {
       "name": "activeBudget",
@@ -41,6 +45,14 @@
       "subtitle": "YNAB",
       "description": "View and Edit Active Budget Information for the current month.",
       "mode": "view"
+    },
+    {
+      "name": "unreviewed",
+      "title": "Unreviewed transactions",
+      "subtitle": "YNAB",
+      "description": "Easily track unapproved or uncategorized transactions.",
+      "mode": "menu-bar",
+      "interval": "10m"
     }
   ],
   "keywords": [
@@ -48,16 +60,16 @@
     "budget"
   ],
   "dependencies": {
-    "@raycast/api": "^1.48.5",
-    "@raycast/utils": "^1.4.18",
-    "dayjs": "^1.10.7",
+    "@raycast/api": "^1.87.2",
+    "@raycast/utils": "^1.18.1",
+    "dayjs": "^1.11.13",
     "fuse.js": "^6.5.3",
     "nanoid": "^3.2.0",
     "node-fetch": "^3.0.0",
     "node-localstorage": "^2.2.1",
     "random-hex-color-generator": "^1.0.12",
-    "swr": "^2.0.4",
-    "ynab": "^1.32.0"
+    "swr": "^2.2.5",
+    "ynab": "^2.6.0"
   },
   "devDependencies": {
     "@types/node": "^18.11.9",
@@ -67,8 +79,8 @@
     "@typescript-eslint/parser": "^5.0.0",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
-    "react-devtools": "^4.27.0",
-    "typescript": "^4.9.3"
+    "react-devtools": "^5.2.0",
+    "typescript": "^5.7.2"
   },
   "preferences": [
     {
@@ -86,8 +98,5 @@
     "fix-lint": "ray lint --fix",
     "lint": "ray lint",
     "publish": "ray publish"
-  },
-  "volta": {
-    "node": "17.1.0"
   }
 }
